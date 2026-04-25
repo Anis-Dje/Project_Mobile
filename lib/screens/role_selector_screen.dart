@@ -26,17 +26,20 @@ class RoleSelectorScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    height: 72,
-                    width: 72,
-                    decoration: BoxDecoration(
-                      color: AppColors.accent,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(
-                      Icons.business_center_outlined,
-                      color: AppColors.primary,
-                      size: 38,
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: 72,
+                      width: 72,
+                      decoration: BoxDecoration(
+                        color: AppColors.accent,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.business_center_outlined,
+                        color: AppColors.primary,
+                        size: 38,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
