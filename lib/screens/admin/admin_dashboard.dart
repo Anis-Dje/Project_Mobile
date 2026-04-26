@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings.dart';
+import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/mock_data.dart';
 import '../../models/user.dart';
@@ -13,32 +14,34 @@ import '../../widgets/section_header.dart';
 /// Spiral 1 scope: pending-intern approval list, mentor assignment overview,
 /// and a placeholder for office-schedule uploads. All data is mocked.
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({super.key});
+  final User? currentUser;
+
+  const AdminDashboard({super.key, this.currentUser});
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  late List<User> _pending;
-
-  @override
-  void initState() {
-    super.initState();
-    _pending = List<User>.from(MockData.pendingInterns);
-  }
+  List<User> get _pending => MockData.pendingInterns;
 
   void _approve(User user) {
-    setState(() => _pending.removeWhere((u) => u.id == user.id));
+    setState(() {
+      MockData.pendingInterns.removeWhere((u) => u.id == user.id);
+      MockData.assignedInterns.add(user.copyWith(approved: true));
+    });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${user.name} approved (mock)')),
+      SnackBar(content: Text('${user.name} approved')),
     );
   }
 
   void _reject(User user) {
-    setState(() => _pending.removeWhere((u) => u.id == user.id));
+    setState(() {
+      MockData.pendingInterns.removeWhere((u) => u.id == user.id);
+      MockData.seedPasswords.remove(user.email.toLowerCase());
+    });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${user.name} rejected (mock)')),
+      SnackBar(content: Text('${user.name} rejected')),
     );
   }
 
@@ -50,7 +53,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
         actions: [
           IconButton(
             tooltip: 'Logout',
-            onPressed: () => Navigator.of(context).maybePop(),
+            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.login,
+              (_) => false,
+            ),
             icon: const Icon(Icons.logout),
           ),
         ],

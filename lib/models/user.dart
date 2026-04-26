@@ -32,4 +32,24 @@ class User {
       approved: json['approved'] == true || json['approved'] == 't',
     );
   }
+
+  User copyWith({
+    String? id,
+    String? email,
+    String? name,
+    String? role,
+    String? photoUrl,
+    String? department,
+    bool? approved,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      photoUrl: photoUrl ?? this.photoUrl,
+      department: department ?? this.department,
+      approved: approved ?? this.approved,
+    );
+  }
 }
