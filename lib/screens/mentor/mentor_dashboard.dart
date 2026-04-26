@@ -10,12 +10,15 @@ import '../../widgets/section_header.dart';
 
 /// Mentor landing dashboard.
 class MentorDashboard extends StatelessWidget {
-  const MentorDashboard({super.key});
+  final User? currentUser;
+
+  const MentorDashboard({super.key, this.currentUser});
 
   @override
   Widget build(BuildContext context) {
     final List<User> interns = MockData.assignedInterns;
     final List<TrainingFile> files = MockData.trainingFiles();
+    final User mentor = currentUser ?? MockData.seedMentors.first;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +26,10 @@ class MentorDashboard extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Logout',
-            onPressed: () => Navigator.of(context).maybePop(),
+            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.login,
+              (_) => false,
+            ),
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -33,7 +39,7 @@ class MentorDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const _MentorHeader(),
+            _MentorHeader(mentor: mentor),
             const SectionHeader(
               title: 'My interns',
               icon: Icons.groups_outlined,
@@ -143,7 +149,9 @@ class MentorDashboard extends StatelessWidget {
 }
 
 class _MentorHeader extends StatelessWidget {
-  const _MentorHeader();
+  final User mentor;
+
+  const _MentorHeader({required this.mentor});
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +161,9 @@ class _MentorHeader extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            const Avatar(
-              name: 'Mounir Saidi',
-              photoUrl: '',
+            Avatar(
+              name: mentor.name,
+              photoUrl: mentor.photoUrl,
               radius: 28,
             ),
             const SizedBox(width: 14),
@@ -164,15 +172,15 @@ class _MentorHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome, M. Saidi',
+                    'Welcome, ${mentor.name}',
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: AppColors.textOnPrimary),
                   ),
-                  const Text(
-                    'Software Engineering — Mentor',
-                    style: TextStyle(color: Colors.white70),
+                  Text(
+                    '${mentor.department} — Mentor',
+                    style: const TextStyle(color: Colors.white70),
                   ),
                 ],
               ),

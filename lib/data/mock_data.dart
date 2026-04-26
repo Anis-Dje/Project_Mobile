@@ -8,18 +8,57 @@ import '../models/user.dart';
 class MockData {
   MockData._();
 
-  static const User currentIntern = User(
-    id: '101',
-    email: 'sara.benali@univ-constantine2.dz',
-    name: 'Sara Benali',
-    role: 'intern',
-    photoUrl: '',
-    department: 'Software Engineering',
-    approved: true,
-  );
+  /// Department options offered on the registration form.
+  static const List<String> departments = [
+    'Software Engineering',
+    'Mobile Development',
+    'Data Science',
+    'Cybersecurity',
+    'Cloud Infrastructure',
+    'Quality Assurance',
+  ];
 
-  static const List<User> pendingInterns = [
-    User(
+  /// Seed admin accounts. Spiral 3 will replace this with a `users` row in Neon.
+  static final List<User> seedAdmins = [
+    const User(
+      id: '1',
+      email: 'admin@prolink.dz',
+      name: 'HR Coordinator',
+      role: 'admin',
+      photoUrl: '',
+      department: 'Human Resources',
+      approved: true,
+    ),
+  ];
+
+  /// Seed mentor accounts.
+  static final List<User> seedMentors = [
+    const User(
+      id: '301',
+      email: 'mentor@prolink.dz',
+      name: 'Mounir Saidi',
+      role: 'mentor',
+      photoUrl: '',
+      department: 'Software Engineering',
+      approved: true,
+    ),
+  ];
+
+  /// Mock password store. Maps lower-cased email to plaintext password
+  /// (Spiral 1 only — Spiral 3 hashes server-side).
+  static final Map<String, String> seedPasswords = {
+    'admin@prolink.dz': 'admin123',
+    'mentor@prolink.dz': 'mentor123',
+    'sara.benali@univ-constantine2.dz': 'sara123',
+    'omar.tazi@univ-constantine2.dz': 'omar123',
+    'rania.bouzid@univ-constantine2.dz': 'rania123',
+    'yacine.haddadi@univ-constantine2.dz': 'yacine123',
+  };
+
+  /// Mutable in-memory list of interns awaiting admin validation. The admin
+  /// dashboard removes from this list when it approves/rejects.
+  static final List<User> pendingInterns = [
+    const User(
       id: '201',
       email: 'amine.kacem@univ-constantine2.dz',
       name: 'Amine Kacem',
@@ -28,7 +67,7 @@ class MockData {
       department: 'Cybersecurity',
       approved: false,
     ),
-    User(
+    const User(
       id: '202',
       email: 'lina.medjadji@univ-constantine2.dz',
       name: 'Lina Medjadji',
@@ -37,7 +76,7 @@ class MockData {
       department: 'Data Science',
       approved: false,
     ),
-    User(
+    const User(
       id: '203',
       email: 'yacine.haddadi@univ-constantine2.dz',
       name: 'Yacine Haddadi',
@@ -48,8 +87,9 @@ class MockData {
     ),
   ];
 
-  static const List<User> assignedInterns = [
-    User(
+  /// Mutable in-memory list of approved interns assigned to a mentor.
+  static final List<User> assignedInterns = [
+    const User(
       id: '101',
       email: 'sara.benali@univ-constantine2.dz',
       name: 'Sara Benali',
@@ -58,7 +98,7 @@ class MockData {
       department: 'Software Engineering',
       approved: true,
     ),
-    User(
+    const User(
       id: '102',
       email: 'omar.tazi@univ-constantine2.dz',
       name: 'Omar Tazi',
@@ -67,7 +107,7 @@ class MockData {
       department: 'Software Engineering',
       approved: true,
     ),
-    User(
+    const User(
       id: '103',
       email: 'rania.bouzid@univ-constantine2.dz',
       name: 'Rania Bouzid',
