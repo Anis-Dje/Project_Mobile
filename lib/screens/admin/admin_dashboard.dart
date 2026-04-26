@@ -23,25 +23,25 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  late List<User> _pending;
-
-  @override
-  void initState() {
-    super.initState();
-    _pending = List<User>.from(MockData.pendingInterns);
-  }
+  List<User> get _pending => MockData.pendingInterns;
 
   void _approve(User user) {
-    setState(() => _pending.removeWhere((u) => u.id == user.id));
+    setState(() {
+      MockData.pendingInterns.removeWhere((u) => u.id == user.id);
+      MockData.assignedInterns.add(user.copyWith(approved: true));
+    });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${user.name} approved (mock)')),
+      SnackBar(content: Text('${user.name} approved')),
     );
   }
 
   void _reject(User user) {
-    setState(() => _pending.removeWhere((u) => u.id == user.id));
+    setState(() {
+      MockData.pendingInterns.removeWhere((u) => u.id == user.id);
+      MockData.seedPasswords.remove(user.email.toLowerCase());
+    });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${user.name} rejected (mock)')),
+      SnackBar(content: Text('${user.name} rejected')),
     );
   }
 
