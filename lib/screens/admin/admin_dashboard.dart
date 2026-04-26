@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings.dart';
+import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/mock_data.dart';
 import '../../models/user.dart';
@@ -13,7 +14,9 @@ import '../../widgets/section_header.dart';
 /// Spiral 1 scope: pending-intern approval list, mentor assignment overview,
 /// and a placeholder for office-schedule uploads. All data is mocked.
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({super.key});
+  final User? currentUser;
+
+  const AdminDashboard({super.key, this.currentUser});
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();
@@ -50,7 +53,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
         actions: [
           IconButton(
             tooltip: 'Logout',
-            onPressed: () => Navigator.of(context).maybePop(),
+            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.login,
+              (_) => false,
+            ),
             icon: const Icon(Icons.logout),
           ),
         ],
