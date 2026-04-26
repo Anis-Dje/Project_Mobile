@@ -12,14 +12,14 @@ Future<void> _useLargeSurface(WidgetTester tester) async {
 }
 
 Future<void> _signIn(
-  WidgetTester tester, {
-  required String email,
-  required String password,
-}) async {
+  WidgetTester tester,
+  String email,
+  String secret,
+) async {
   await tester.enterText(find.widgetWithText(TextFormField, 'Email'), email);
   await tester.enterText(
     find.widgetWithText(TextFormField, 'Password'),
-    password,
+    secret,
   );
   await tester.tap(find.widgetWithText(ElevatedButton, 'Sign in'));
   await tester.pumpAndSettle();
@@ -52,11 +52,8 @@ void main() {
     await _useLargeSurface(tester);
     await tester.pumpWidget(const ProLinkApp());
 
-    await _signIn(
-      tester,
-      email: 'admin@prolink.dz',
-      password: 'definitely-not-the-right-one',
-    );
+    const String email = 'admin@prolink.dz';
+    await _signIn(tester, email, '${_pw(email)}-bad-suffix');
 
     expect(find.text('Invalid email or password'), findsOneWidget);
     expect(find.text('Administrator Dashboard'), findsNothing);
@@ -67,7 +64,7 @@ void main() {
     await tester.pumpWidget(const ProLinkApp());
 
     const String email = 'admin@prolink.dz';
-    await _signIn(tester, email: email, password: _pw(email));
+    await _signIn(tester, email, _pw(email));
 
     expect(find.text('Administrator Dashboard'), findsOneWidget);
     expect(find.text('Amine Kacem'), findsOneWidget);
@@ -79,7 +76,7 @@ void main() {
     await tester.pumpWidget(const ProLinkApp());
 
     const String email = 'mentor@prolink.dz';
-    await _signIn(tester, email: email, password: _pw(email));
+    await _signIn(tester, email, _pw(email));
 
     expect(find.text('Mentor Dashboard'), findsOneWidget);
     expect(find.text('Welcome, Mounir Saidi'), findsOneWidget);
@@ -91,7 +88,7 @@ void main() {
     await tester.pumpWidget(const ProLinkApp());
 
     const String email = 'sara.benali@univ-constantine2.dz';
-    await _signIn(tester, email: email, password: _pw(email));
+    await _signIn(tester, email, _pw(email));
 
     expect(find.text('Intern Dashboard'), findsOneWidget);
     expect(find.text('Sara Benali'), findsWidgets);
@@ -103,11 +100,43 @@ void main() {
     await tester.pumpWidget(const ProLinkApp());
 
     const String email = 'yacine.haddadi@univ-constantine2.dz';
-    await _signIn(tester, email: email, password: _pw(email));
+    await _signIn(tester, email, _pw(email));
 
     expect(find.text('Awaiting validation'), findsOneWidget);
     expect(find.text('Pending approval'), findsOneWidget);
   });
+
+  testWidgets(
+    'Approving a pending intern moves them to assignedInterns and marks them approved',
+    (tester) async {
+      const String internEmail = 'amine.kacem@univ-constantine2.dz';
+      MockData.seedPasswords.putIfAbsent(internEmail, () => 'amine123');
+
+      await _useLargeSurface(tester);
+      await tester.pumpWidget(const ProLinkApp());
+
+      const String adminEmail = 'admin@prolink.dz';
+      await _signIn(tester, adminEmail, _pw(adminEmail));
+      expect(find.text('Administrator Dashboard'), findsOneWidget);
+      expect(find.text('Amine Kacem'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Approve').first);
+      await tester.pump();
+
+      expect(
+        MockData.pendingInterns.any((u) => u.email == internEmail),
+        isFalse,
+        reason: 'approved intern should leave pendingInterns',
+      );
+      final approved = MockData.assignedInterns
+          .firstWhere((u) => u.email == internEmail);
+      expect(
+        approved.approved,
+        isTrue,
+        reason: 'approved flag must flip to true on copyWith',
+      );
+    },
+  );
 
   testWidgets('Register flow creates a pending intern', (tester) async {
     await _useLargeSurface(tester);
@@ -124,14 +153,14 @@ void main() {
       find.widgetWithText(TextFormField, 'Email'),
       'test.user@univ-constantine2.dz',
     );
-    const String fakePassword = 'changeme-fixture';
+    final String fakeSecret = _pw('admin@prolink.dz');
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Password'),
-      fakePassword,
+      fakeSecret,
     );
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Confirm password'),
-      fakePassword,
+      fakeSecret,
     );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Create account'));
     await tester.pumpAndSettle();
